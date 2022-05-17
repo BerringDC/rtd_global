@@ -209,7 +209,7 @@ class Merge(Load):
                 merged_data = merged_data[['DATETIME', 'TEMPERATURE', 'PRESSURE', 'SALINITY', 'LATITUDE',
                                            'LONGITUDE']] if 'SALINITY' in merged_data else merged_data[
                     ['DATETIME', 'TEMPERATURE', 'PRESSURE', 'LATITUDE', 'LONGITUDE']]
-                merged_data['TEMPERATURE'] = round(merged_data['TEMPERATURE'], 1)
+                merged_data['TEMPERATURE'] = round(merged_data['TEMPERATURE'], 3)
                 merged_data['PRESSURE'] = round(merged_data['PRESSURE'], 1)
                 merged_data.to_csv(self.path + 'merged/{sensor}/{filename}'.format(sensor=sensor, filename=filename),
                                    index=None)

@@ -78,7 +78,10 @@ print('reaching moana {}...'.format(macs))
 
 while True:
     for mac in macs:
-        full_demo(mac)
+        try:
+            full_demo(mac)
+        except:
+            print('BLE Exception')
         time.sleep(5)
 
 
