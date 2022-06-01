@@ -32,7 +32,7 @@ if len(queued_wifi) > 0:
             metadata = ','.join(elem.split('_')) + '\n'
             if conn_type == 1 or conn_type == 2:  # wifi or gsm
                 Transfer('/home/ec2-user/rtd/vessels/{vessel}/'.format(vessel=setup_rtd.parameters['vessel_name'])).upload(
-                    'queued/Moana' + elem, 'merged/Moana/' + elem)
+                    'queued/Moana/' + elem, 'merged/Moana/' + elem)
                 os.remove(setup_rtd.parameters['path'] + 'queued/Moana/' + elem)
         else:
             df_queue.to_csv(setup_rtd.parameters['path'] + 'logs/no_rtd/' + elem, index=None)
