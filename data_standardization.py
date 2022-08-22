@@ -18,13 +18,12 @@ class Standardize(object):
 
     def Moana(self):
         try:
+            self.data = pd.read_csv(self.path + 'logs/raw/Moana/' + self.filename, header=9)
+            self.data['DATETIME'] = pd.to_datetime(self.data.Date + ' ' + self.data.Time, format='%d/%m/%Y %H:%M:%S')
+            self.data.rename(columns={'Temperature C': 'TEMPERATURE', 'Depth Decibar': 'PRESSURE'}, inplace=True)
+        except:
             self.data = pd.read_csv(self.path + 'logs/raw/Moana/' + self.filename)
             self.data['DATETIME'] = pd.to_datetime(self.data['DATETIME'])
-        except:
-            self.data_info = pd.read_csv(self.path + 'logs/raw/Moana/' + self.filename, nrows=8)
-            self.data = pd.read_csv(self.path + 'logs/raw/Moana/' + self.filename, header=9)
-            self.data['DATETIME'] = pd.to_datetime(self.data.Date + ' ' + self.data.Time, format='%Y-%m-%d %H:%M:%S')
-            self.data.rename(columns={'Temperature C': 'TEMPERATURE', 'Depth Decibar': 'PRESSURE'}, inplace=True)
         self.data['TEMPERATURE'] = pd.to_numeric(self.data['TEMPERATURE'])
         self.data['PRESSURE'] = pd.to_numeric(self.data['PRESSURE'])
         self.data['TEMPERATURE'] = self.data.apply(lambda x: round(x['TEMPERATURE'], 4), axis=1)
@@ -62,5 +61,3 @@ class Standardize(object):
         self.data['TEMPERATURE'] = self.data.apply(lambda x: round(x['TEMPERATURE'], 3), axis=1)
         self.data['PRESSURE'] = self.data.apply(lambda x: round(x['PRESSURE'], 3), axis=1)
         self.data = self.data[['DATETIME', 'TEMPERATURE', 'PRESSURE']]
-
-
