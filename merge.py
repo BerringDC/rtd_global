@@ -25,7 +25,7 @@ class Load(object):
         l = []
         if sensor == 'Moana':
             file = file.split('/')[-1]
-            moana, sn, num = file.split('.')[0].split('_')
+            moana, sn, num, date_file = file.split('.')[0].split('_')
         elif sensor == 'Lowell':
             lowell, sn, date, time = file.split('.')[0].split('_')
         din = data[data['PRESSURE'] < data['PRESSURE'].max() * 0.1]
