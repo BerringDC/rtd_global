@@ -13,7 +13,7 @@ import serial.tools.list_ports as stlp
 import sys
 from connectivity import Connection
 from sftp_aws import Transfer
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import setup_rtd
 import paramiko
@@ -163,6 +163,8 @@ class Profile(object):
         conn_type = Connection().conn_type()
         if conn_type:
             data_gps = pd.read_csv(self.path + 'gps/gps_merged.csv')
+            data_gps['DATETIME'] = pd.to_datetime(data_gps['DATETIME'])
+            data_gps = data_gps[data_gps['DATETIME'] > (datetime.utcnow() - timedelta(days=1))]
             gps_name = 'gps' + datetime.utcnow().strftime('%y%m%d') + '.csv'
             data_gps.to_csv(self.path + 'logs/gps/' + gps_name, index=False)
             try:
