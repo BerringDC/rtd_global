@@ -8,7 +8,8 @@ parameters = {'path': '/home/pi/rtd_global/',
               'tem_unit': 'Fahrenheit',
               'depth_unit': 'Fathoms',
               'moana_SN': '',
-              'local_time': 0}
+              'local_time': 0
+              'timezone': ''}
 
 ############################################################################
 ########################### OPTIONS ########################################

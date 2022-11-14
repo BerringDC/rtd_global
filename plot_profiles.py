@@ -22,7 +22,19 @@ class Plotting(object):
                 self.df['TEMPERATURE'] = self.df['TEMPERATURE'] * 1.8 + 32
             if setup_rtd.parameters['depth_unit'] == 'Fathoms':
                 self.df['PRESSURE'] = self.df['PRESSURE'] * 0.546807
-            self.df['DATETIME'] += timedelta(hours=setup_rtd.parameters['local_time'])
+
+            timediff = self.df['DATETIME'].iloc[0]
+            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz='UTC')
+            date_idx = pd.DatetimeIndex(self.df['DATETIME'])
+            self.df['DATETIME'] = date_idx.tz_convert(setup_rtd.parameters['timezone']).to_series(index=self.df.index)
+            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz=None)
+            timediff = self.df['DATETIME'].iloc[0] - timediff
+
+            try:
+                self.df['datetime'] = pd.to_datetime(self.df['datetime'])
+            except:
+                pass
+
             self.filename = self.df.iloc[-1]['DATETIME'].strftime('%y-%m-%d %H:%M')
             try:
                 self.plot_profile()
@@ -36,7 +48,7 @@ class Plotting(object):
                 self.df['TEMPERATURE'] = (self.df['TEMPERATURE'] - 32) / 1.8
             if setup_rtd.parameters['depth_unit'] == 'Fathoms':
                 self.df['PRESSURE'] = self.df['PRESSURE'] / 0.546807
-            self.df['DATETIME'] -= timedelta(hours=setup_rtd.parameters['local_time'])
+            self.df['DATETIME'] -= timedelta(hours=timediff)
         # register_matplotlib_converters()
 
     def plot_profile(self):

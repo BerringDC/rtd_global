@@ -35,10 +35,11 @@ class Profile(object):
         self.tow_num = len(os.listdir(setup_rtd.parameters['path'] + 'merged'))
         self.path = setup_rtd.parameters['path']
         self.gear = setup_rtd.parameters['gear_type']
+        self.flag_gps = True
 
     def main(self):
         device = self.list_ports('USB-Serial Controller D')
-        gps = GPS(device, self.path)
+        if self.flag_gps: gps = GPS(device, self.path)
 
         for sensor in self.l_sensors:
             # NKE necessary variable
@@ -55,7 +56,7 @@ class Profile(object):
 
         old_time = datetime.now()
 
-        while True:
+        while True and self.flag_gps:
             curr_time = datetime.now()
             gps.add_df()
             if (curr_time - old_time).total_seconds() / 60 > 5:
