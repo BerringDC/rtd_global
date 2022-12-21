@@ -24,6 +24,7 @@ class Plotting(object):
                 self.df['PRESSURE'] = self.df['PRESSURE'] * 0.546807
 
             timediff = self.df['DATETIME'].iloc[0]
+<<<<<<< HEAD
 
             self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz='UTC')
             date_idx = pd.DatetimeIndex(self.df['DATETIME'])
@@ -34,12 +35,23 @@ class Plotting(object):
 
             print(timediff)
 
+=======
+            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz='UTC')
+            date_idx = pd.DatetimeIndex(self.df['DATETIME'])
+            self.df['DATETIME'] = date_idx.tz_convert(setup_rtd.parameters['timezone']).to_series(index=self.df.index)
+            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz=None)
+            timediff = self.df['DATETIME'].iloc[0] - timediff
+
+>>>>>>> bca349dec4cbcbd918f0146639fc94790c7582d2
             try:
                 self.df['datetime'] = pd.to_datetime(self.df['datetime'])
             except:
                 pass
 
+<<<<<<< HEAD
             # self.df['DATETIME'] += timedelta(hours=setup_rtd.parameters['local_time'])
+=======
+>>>>>>> bca349dec4cbcbd918f0146639fc94790c7582d2
             self.filename = self.df.iloc[-1]['DATETIME'].strftime('%y-%m-%d %H:%M')
             try:
                 self.plot_profile()
