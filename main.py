@@ -283,7 +283,7 @@ while True:
         print("RPi started recording the main routine.\n")
         Profile(setup_rtd.parameters['sensor_type']).main()
     except:
-      print('Unexpected error:', sys.exc_info()[0])
-      time.sleep(60)
+        print('Unexpected error:', sys.exc_info()[0])
+        time.sleep(60)
 
 
