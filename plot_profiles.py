@@ -27,15 +27,9 @@ class Plotting(object):
 
             self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz='UTC')
             date_idx = pd.DatetimeIndex(self.df['DATETIME'])
-            self.df['DATETIME'] = date_idx.tz_convert(vess_timezone).to_series(index=self.df.index)
-            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz=None)
-
-            timediff = self.df['DATETIME'].iloc[0] - timediff
-
-            self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz='UTC')
-            date_idx = pd.DatetimeIndex(self.df['DATETIME'])
             self.df['DATETIME'] = date_idx.tz_convert(setup_rtd.parameters['timezone']).to_series(index=self.df.index)
             self.df['DATETIME'] = self.df['DATETIME'].dt.tz_localize(tz=None)
+
             timediff = self.df['DATETIME'].iloc[0] - timediff
 
             try:
@@ -165,6 +159,3 @@ class Plotting(object):
         plt.savefig(self.path + 'Desktop/Profiles/' + self.filename + '/' + self.filename + '_up_down.png')
 
         plt.close()
-
-
-
