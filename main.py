@@ -153,9 +153,6 @@ class Profile(object):
             conn_type = Connection().conn_type()
             if conn_type:  # wifi
                 print('There is internet connection')
-                # Transfer('/home/ec2-user/rtd/vessels/{vess}/merged/{sensor}/'.format(
-                #     vess=self.vessel_name, sensor=sensor)).upload(
-                #     'merged/{sensor}/'.format(sensor=sensor) + filename, filename)
                 Transfer(self.path + 'merged/{sensor}/'.format(sensor=sensor) + filename,
                          self.vessel_name + '/merged/' + sensor + '/' + filename)
                 print('Data transferred successfully to the AWS endpoint')
@@ -175,16 +172,12 @@ class Profile(object):
             gps_name = 'gps' + datetime.utcnow().strftime('%y%m%d') + '.csv'
             data_gps.to_csv(self.path + 'logs/gps/' + gps_name, index=False)
             try:
-                # Transfer('/home/ec2-user/rtd/vessels/' + self.vessel_name + '/').upload('logs/gps/' + gps_name,
-                #                                                                         'gps/' + gps_name)
                 Transfer(self.path + 'logs/gps/' + gps_name, self.vessel_name + '/gps/' + gps_name)
             except paramiko.ssh_exception.SSHException:
                 logging.debug('GPS data was not uploaded')
                 print('GPS data was not uploaded')
 
             for file in l_rec_file:
-                # Transfer('/home/ec2-user/rtd/vessels/' + self.vessel_name + '/').upload(
-                #     'logs/raw/{sensor}/'.format(sensor=sensor) + file, 'sensor/{sensor}/'.format(sensor=sensor) + file.split('/')[-1])
                 Transfer(self.path + 'logs/raw/{sensor}/'.format(sensor=sensor) + file,
                          self.vessel_name + '/raw/' + sensor + '/' + file.split('/')[-1])
 
@@ -284,6 +277,3 @@ while True:
         Profile(setup_rtd.parameters['sensor_type']).main()
     except:
         print('Unexpected error:', sys.exc_info()[0])
-        time.sleep(60)
-
-
