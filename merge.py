@@ -9,6 +9,8 @@ from datetime import timedelta, datetime
 import setup_rtd
 import plot_profiles
 from data_standardization import Standardize
+from geopy import Point
+from geopy.distance import distance
 
 logging.basicConfig(filename=setup_rtd.parameters['path'] + 'logs/main.log',
                     format='%(levelname)s %(asctime)s :: %(message)s',
@@ -200,18 +202,37 @@ class Merge(Load):
                 GPS = GPS.sort_values(by=['DATETIME'])
                 GPS = GPS[GPS['DATETIME'] > (datetime.utcnow() - timedelta(hours=num_hours))].reset_index(drop=True)
 
+                GPS['LATITUDE'] = GPS['LATITUDE'].astype(float)
+                GPS['LONGITUDE'] = GPS['LONGITUDE'].astype(float)
+
+                GPS['gap'] = (GPS['DATETIME'] - GPS['DATETIME'].shift(1)).dt.total_seconds()
+                GPS['LOCATION'] = GPS.apply(lambda row: Point(latitude=row['LATITUDE'], longitude=row['LONGITUDE']),
+                                            axis=1)
+
+                GPS['LOCATION_NEXT'] = GPS['LOCATION'].shift(1)
+                GPS.loc[GPS['LOCATION_NEXT'].isna(), 'LOCATION_NEXT'] = None
+
+                GPS['distance'] = GPS.apply(lambda row: distance(row['LOCATION'], row['LOCATION_NEXT']).m if row[
+                                                                                                                 'LOCATION_NEXT'] is not None else float(
+                    'nan'), axis=1)
+                GPS['SPEED'] = GPS['distance'] / GPS['gap']
+                GPS = GPS[['DATETIME', 'LATITUDE', 'LONGITUDE', 'SPEED']]
+
                 logging.debug('Merging CTD file') if self.checksalinity else logging.debug('Merging TD file')
 
                 print('Merging...')
 
                 merged_data = self.merge_mobile(GPS, data) if gear_type == 'Mobile' else self.merge_fixed(GPS, data)
 
+                if gear_type == 'Fixed':
+                    merged_data['SPEED'] = 0
+
                 print(merged_data)
                 if len(merged_data) == 0: continue
 
                 merged_data = merged_data[['DATETIME', 'TEMPERATURE', 'PRESSURE', 'SALINITY', 'LATITUDE',
-                                           'LONGITUDE']] if 'SALINITY' in merged_data else merged_data[
-                    ['DATETIME', 'TEMPERATURE', 'PRESSURE', 'LATITUDE', 'LONGITUDE']]
+                                           'LONGITUDE', 'SPEED']] if 'SALINITY' in merged_data else merged_data[
+                    ['DATETIME', 'TEMPERATURE', 'PRESSURE', 'LATITUDE', 'LONGITUDE', 'SPEED']]
                 merged_data['TEMPERATURE'] = round(merged_data['TEMPERATURE'], 3)
                 merged_data['PRESSURE'] = round(merged_data['PRESSURE'], 1)
                 merged_data.to_csv(self.path + 'merged/{sensor}/{filename}'.format(sensor=sensor, filename=filename),
@@ -246,8 +267,8 @@ class Merge(Load):
             by=['DATETIME']).reset_index(
             drop=True)
 
-        sensor['LATITUDE'], sensor['LONGITUDE'] = sensor['LATITUDE'].interpolate(), sensor[
-            'LONGITUDE'].interpolate()
+        sensor['LATITUDE'], sensor['LONGITUDE'], sensor['SPEED'] = sensor['LATITUDE'].interpolate(), sensor[
+            'LONGITUDE'].interpolate(), sensor['SPEED'].interpolate()
 
         sensor = sensor.dropna().reset_index(drop=True)
         sensor = sensor.fillna(method='ffill')
