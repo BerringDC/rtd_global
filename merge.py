@@ -311,7 +311,7 @@ class Merge(Load):
         dif_time = min(difi, diff)
 
         if dif_time / 60 < 10:
-            if dif_time == difi:
+            if dif_time == diff:
                 lat2, lon2 = data2[0].iloc[-1]['LATITUDE'], data2[0].iloc[-1]['LONGITUDE']
             else:
                 lat2, lon2 = data2[1].iloc[0]['LATITUDE'], data2[1].iloc[0]['LONGITUDE']
